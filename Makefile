@@ -1,5 +1,5 @@
 #############################################################################
-#		               QuickGraphs Package Makefile	                        #
+#		               cl-graphs Package Makefile	                        #
 #############################################################################
 
 #####################################################################
@@ -38,7 +38,7 @@ GTEST_DIR = $(HOME)/googletest/googletest
 GTEST_MAIN = ./gtest
 
 # Tests produced by this makefile.
-TESTS = $(USER_DIR)/adjMatrixTest
+TESTS = $(USER_DIR)/adjMatrixTest $(USER_DIR)/graphTest
 
 # Preprocessor Flags
 CPPFLAGS += -isystem $(GTEST_DIR)/include
@@ -58,12 +58,10 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 GTEST_SRC_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 
 $(GTEST_MAIN)/gtest-all.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-            $(GTEST_DIR)/src/gtest-all.cc -o $(GTEST_MAIN)/gtest-all.o
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest-all.cc -o $@
 
 $(GTEST_MAIN)/gtest_main.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-		$(GTEST_DIR)/src/gtest_main.cc -o $(GTEST_MAIN)/gtest_main.o
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest_main.cc -o $@
 
 $(GTEST_MAIN)/gtest.a : $(GTEST_MAIN)/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
@@ -94,17 +92,20 @@ cleanTestBuild :
 clean : cleanSrc cleanTestBuild
 
 #################################################
-# QuickGraphs
+# cl-graphs
 #################################################
 
 $(USER_OBJ)/Graph.o : $(USER_DIR)/Graph.cpp $(USER_DIR)/Graph.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/Graph.cpp -o $(USER_OBJ)/Graph.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/Graph.cpp -o $@
 
 $(USER_OBJ)/adjMatrixTest.o : $(GTEST_HEADERS) $(USER_DIR)/adjMatrixTest.cpp $(USER_DIR)/Graph.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/adjMatrixTest.cpp -o $(USER_OBJ)/adjMatrixTest.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/adjMatrixTest.cpp -o $@
 
 $(USER_DIR)/adjMatrixTest : $(USER_OBJ)/Graph.o $(USER_OBJ)/adjMatrixTest.o $(GTEST_MAIN)/gtest.a 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
+$(USER_OBJ)/graphTest.o : $(GTEST_HEADERS) $(USER_DIR)/graphTest.cpp $(USER_DIR)/Graph.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/graphTest.cpp -o $@
 
-
+$(USER_DIR)/graphTest : $(USER_OBJ)/Graph.o $(USER_OBJ)/graphTest.o $(GTEST_MAIN)/gtest.a
+	$(CXX) $(FPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
