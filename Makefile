@@ -87,7 +87,7 @@ cleanSrc :
 
 # Clean Google C++ Testing Build
 cleanTestBuild : 
-	rm -f $(GTEST_MAIN)/gtest.a $(GTEST_MAIN)gtest_main.a \
+	rm -f $(GTEST_MAIN)/gtest.a $(GTEST_MAIN)/gtest_main.a \
 		$(GTEST_MAIN)/*.o
 
 # Clean object files and test executables, and Google C++ Testing Build
