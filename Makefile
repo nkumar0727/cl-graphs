@@ -1,5 +1,5 @@
 #############################################################################
-#		               cl-graphs Package Makefile	                        #
+#		               quick-graphs Package Makefile	                    #
 #############################################################################
 
 #####################################################################
@@ -9,10 +9,10 @@
 # To build Google C++ Testing Framework 
 # > make gtest
 #
-# To build QuickGraphs unit tests
+# To build quick-graph unit tests
 # > make allTests
 #
-# To clean QuickGraphs source object files and executables
+# To clean quick-graph source object files and executables
 # > make cleanSrc
 #
 # To clean Google C++ Testing Framework Build
@@ -76,12 +76,15 @@ $(GTEST_MAIN)/gtest_main.a : $(GTEST_MAIN)/gtest-all.o $(GTEST_MAIN)/gtest_main.
 # Build Google C++ Testing Framework
 gtest : $(GTEST_MAIN)/gtest.a $(GTEST_MAIN)/gtest_main.a
 
-# Build all QuickGraphs unit tests
+# Build all quick-graph unit tests
 allTests : $(TESTS)
 
-# Clean object files and test executables.
+# Build quick-graph shell
+shell : $(USER_DIR)/shell 
+
+# Clean object files and shell and test executables.
 cleanSrc :
-	rm -f $(TESTS) $(USER_OBJ)/*.o
+	rm -f $(TESTS) $(USER_DIR)/shell $(USER_OBJ)/*.o
 
 # Clean Google C++ Testing Build
 cleanTestBuild : 
@@ -92,7 +95,7 @@ cleanTestBuild :
 clean : cleanSrc cleanTestBuild
 
 #################################################
-# cl-graphs
+# quick-graphs 
 #################################################
 
 $(USER_OBJ)/Graph.o : $(USER_DIR)/Graph.cpp $(USER_DIR)/Graph.h $(GTEST_HEADERS)
@@ -108,4 +111,15 @@ $(USER_OBJ)/graphTest.o : $(GTEST_HEADERS) $(USER_DIR)/graphTest.cpp $(USER_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/graphTest.cpp -o $@
 
 $(USER_DIR)/graphTest : $(USER_OBJ)/Graph.o $(USER_OBJ)/graphTest.o $(GTEST_MAIN)/gtest.a
-	$(CXX) $(FPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+
+#################################################
+# Shell
+#################################################
+
+$(USER_DIR)/shell : $(USER_OBJ)/Graph.o $(USER_OBJ)/shell.o 
+	$(CXX) $^ -Wall -g -o $@
+
+$(USER_OBJ)/shell.o : $(USER_DIR)/shell.cpp $(USER_DIR)/shell.h
+	$(CXX) $(CXXFLAGS) -c $(USER_DIR)/shell.cpp -o $@
+

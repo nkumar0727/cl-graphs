@@ -1,5 +1,7 @@
-#include <vector>
+#pragma once
+
 #include <string>
+#include <vector>
 #include <climits>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -11,10 +13,42 @@ typedef unsigned int Offset;
 typedef std::string Key;
 typedef std::vector<std::vector<Weight>> Matrix;
 
-#define MAXKEY 10               // maximum vertex string length
-
 #define NWT SHRT_MIN       // weight in adjacency matrix corresponding to
                                 // lack of edge present between vertices
+
+/////////////////////////////////////////////////////////////////////////////
+// AUXILIARY FUNCTION DEFINITIONS                                          //
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+ * Remove trailing and leading whitespace froms string.
+ *
+ * @param str, the string to trim
+ * @return the trimmed string
+ */
+std::string trim(const std::string& str);
+
+/*
+ * Determine if Key k is present in vector v using linear search.
+ *
+ * @param v, the vector to search through
+ * @param k, the key to search for
+ *
+ * @return true if key is present
+ *         false if key is not present
+ */
+bool contains(const std::vector<Key>& v, const Key& k);
+
+/*
+ * Determine the position in which k is located in v.
+ *
+ * @param v, the vector to search through
+ * @param k, the key to search for
+ *
+ * @return the position of k in v
+ *         -1 if k is not found in v 
+ */
+int findGraphSlot(const std::vector<Key>& v, const Key& k);
 
 /////////////////////////////////////////////////////////////////////////////
 // GRAPH STRUCTURES AND CLASSES                                            //
@@ -42,12 +76,12 @@ class AdjMatrix {
         /*
          * TESTING PURPOSES ONLY
          */
-        Matrix accessMatrix();
+        Matrix accessMatrix() const;
 
         /*
          * TESTING PURPOSES ONLY
          */
-        Offset getSize();
+        Offset getSize() const;
 
         /*
          * Adds another slot into the square matrix while preserving
@@ -99,7 +133,7 @@ class AdjMatrix {
          * @return true if there is an edge from s1 to s2
          *         false if there is not an edge from s1 to s2
          */
-        bool isEdge(Offset s1, Offset s2);
+        bool isEdge(Offset s1, Offset s2) const;
 
         /*
          * Retreives data[s1][s2], which denotes the weight associated with
@@ -110,7 +144,7 @@ class AdjMatrix {
          *
          * @return the weight associated with edge from s1 to s2; data[s1][s2]
          */
-        Weight getWeight(Offset s1, Offset s2);
+        Weight getWeight(Offset s1, Offset s2) const;
 
         /*
          * Retrieves the neighboring offsets of s that are not equal to
@@ -119,7 +153,7 @@ class AdjMatrix {
          * @param s, the slot in the array
          * @param n, the list of neighboring offsets returned by reference
          */
-        void getNeighbors(Offset s, std::vector<Offset>& n);
+        void getNeighbors(Offset s, std::vector<Offset>& n) const;
 
         /*
          * Prints out contents of matrix to the console in the following
@@ -127,7 +161,7 @@ class AdjMatrix {
          *
          * ...
          */
-        void print();
+        void print() const;
 };
 
 /*
@@ -140,25 +174,32 @@ class WeightedDigraph {
         AdjMatrix matrix;
         std::vector<Key> vertices;
 
+        /*
+         * Auxiliary function for fileLoad(const std::string& file).
+         * Adds edges to weighted digraph after vertices have been added in
+         * the aformentioned function.
+         *
+         * @param vertex, the vertex keys
+         * @param edges, the outgoing edges in 1-to-1 correspondence with
+         * the vertex keys
+         */
+        void loadEdges(std::vector<Key>& vertex, std::vector<Key>& edges);
     public:
         /* Constructor */
         WeightedDigraph();
         
-        /* Destructor */
-        ~WeightedDigraph();
-
         /*
          * Adds a vertex to the graph.
          * Does not add a vertex if a duplicate key already exists in the
          * graph.
          *
-         * @param k, the name associated with the vertex
+         * @param k, a non-empty string key of arbitrary length
          * 
          * @return true, if the vertex was successfully added
-         *         false, if the vertex could not be added due to an existing
-         *         duplicate key
+         *         false, if the vertex could not be added due k already
+         *         existing
          */
-        bool addVertex(Key k);
+        bool addVertex(const Key& k);
 
         /*
          * Removes a vertex from the graph.
@@ -170,47 +211,65 @@ class WeightedDigraph {
          * @return true, if the vertex could be removed
          *         false, if no such vertex exists in graph
          */
-        bool removeVertex(Key k);
+        bool removeVertex(const Key& k);
        
         /*
          * Removes every edge and vertex from the graph.
+         * Previous in-memory graph contents are destroyed.
          */ 
         void clear();
        
         /*
          * Clears current graph. Then loads a graph specified by the formatted
-         * file. File must be in the following specialized format:
+         * file. File must hold the .graph extension. For example: test.graph
+         * File must be in the following specialized format:
          *
+         * <root_vertex1> | <adj_vertex1>,<weight1> <adj_vertex2>,<weight2> ...
+         * <root_vertex2> | <adj_vertex1>,<weight1> <adj_vertex2>,<weight2> ...
          * ...
          *
          * @param file, name of the file to load graph from
+         *
          * @return 0 upon successful load
          *        -1 upon unsuccessful load due to inability to open file
-         *        -2 upon unsuccessful load due to file formatting issues
-         */ 
-        int fileLoad(std::string file);
-        
+         *        -2 upon unsuccessful load due to incorrect file extension
+         *        and/or format
+         */
+         int fileLoad(const std::string& file);
+      
         /*
-         * Creates an edge between k1 and k2 with a specific weight.
-         * Edges are created using a "from-to" logic.
+         * Writes the current graph to the disk using the file name specified.
+         * Will overwrite a file with the same name with new contents. File
+         * must hold the .graph extension. For example: test.graph.
          *
-         * For example, addEdge("Chicago","New York", 9000) will create a
-         * directed edge starting from "Chicago" going to "New York" with a
-         * weight of 9000 units.
+         * @param file, the name of the file to write to disk
+         *
+         * @return 0 upon successful write
+         *        -1 upon unsuccessful write due to inability to open file
+         *        -2 upon unsuccessful write due to incorrect file extension 
+         */ 
+        int fileWrite(const std::string& file) const;
+         
+        /*
+         * Sets the weight associated with the edge going from k1 to k2 to
+         * value w.
+         * Edges exist based on a "from-to" logic.
+         *
+         * For example, if there is an edge ("Chicago","New York".9000), then
+         * setWeight("Chicago","New York",10) will assign the weight of the
+         * edge going from "Chicago" to "New York" to be 10.
          *
          * @param k1, vertex where edge starts
          * @param k2, vertex where edge ends
-         * @param w, the weight associated with the edge
-         * 
+         * @param w, weight of the edge
+         *
          * @return 0 if edge was successfully created
-         *        -1 if edge was not successfully created due to nonexistant
-         *        vertices
-         *        -2 if edge was not successfully created due to attempted
-         *        self connection
-         *        -3 if edge was not successfully created due to an existing
-         *        connection
-         */
-        int addEdge(Key k1, Key k2, Weight w);
+         *        -1 if edge was unsuccesfully created due to k1 or k2 not
+         *        existing 
+         *         1 if edge was successfully created, but overwrote an
+         *         existing edge weight between k1 and k2
+         */ 
+        int setEdge(const Key& k1, const Key& k2, Weight w);
         
         /*
          * Remove an existing edge between k1 and k2.
@@ -223,14 +282,12 @@ class WeightedDigraph {
          * @param k2, vertex where edge ends
          *
          * @return 0 if edge was successfully removed
-         *        -1 if edge was not successfully removed due to nonexistant
-         *        vertices
-         *        -2 if edge was not successfully removed due to an attempted
-         *        self disconnection
-         *        -3 if edge was not successfully removed due to an existing
-         *        disconnection
+         *        -1 if edge was not successfully removed due to k1 or k2 not
+         *        existing
+         *        -2 if edge was not successfully removed due to a nonexisting
+         *         edge between k1 and k2
          */
-        int removeEdge(Key k1, Key k2);
+        int removeEdge(const Key& k1, const Key& k2);
         
         /*
          * Determines whether or not an edge exists between k1 and k2. 
@@ -245,10 +302,10 @@ class WeightedDigraph {
          *
          * @return true if there is an edge between k1 and k2 (self connections
          *         are included)
-         *         false if there is not an edge between the vertices, or if
-         *         there is a nonexisting vertex that makes up the edge
+         *         false if there is not an edge between k1 and k2, or if
+         *         k1 or k2 do not exist
          */
-        bool isEdge(Key k1, Key k2);
+        bool isEdge(const Key& k1, const Key& k2) const;
         
         /*
          * Retreives the weight associated with the edge going from k1 to k2.
@@ -265,31 +322,10 @@ class WeightedDigraph {
          *
          * @return true if there is an edge between k1 and k2 (self connections 
          *         are included)
-         *         false if there is not an edge between the vertices, or if
-         *         there is a nonexisting vertex that makes up the edge
-         *
-         *         weight by reference
+         *         false if there is not an edge between k1 and k2, or if k1
+         *         or k2 does not exist
          */
-        bool getWeight(Key k1, Key k2, Weight& w);
-        
-        /*
-         * Sets the weight associated with the edge going from k1 to k2 to
-         * value w.
-         * Edges exist based on a "from-to" logic.
-         *
-         * For example, if there is an edge ("Chicago","New York".9000), then
-         * setWeight("Chicago","New York",10) will assign the weight of the
-         * edge going from "Chicago" to "New York" to be 10.
-         *
-         * @param k1, vertex where edge starts
-         * @param k2, vertex where edge ends
-         *
-         * @return true if weight was successfully assigned to w
-         *         false if weight was unsuccessfully assigned to w due to
-         *         nonexisting vertices, or nonexisting edges, or a self edge
-         *         was used
-         */ 
-        bool setWeight(Key k1, Key k2, Weight w);
+        bool getWeight(const Key& k1, const Key& k2, Weight& w) const;
         
         /*
          * Retrieves the neighbors of vertex k in graph.
@@ -299,15 +335,22 @@ class WeightedDigraph {
          *
          * @return true upon successful retreival of neighbors of k
          *         false upon unsuccessful retreival of neighbors of k due to
-         *         nonexistant vertex
+         *         k not existing
          */
-        bool getNeighbors(Key k, std::vector<Key>& n);
-        
+        bool getNeighbors(const Key& k, std::vector<Key>& n) const;
+
         /*
          * Prints out contents of graph to the console in the following
          * format:
          *
+         * Vertex <vertex1> connected to: <neighbor1> <neighbor2> ...
+         * Vertex <vertex2> connected to: <neighbor1> <neighbor2> ...
          * ...
          */
-        void print();
+        void print() const;
+
+        /*
+         * TESTING PURPOSES ONLY
+         */
+        bool isEmpty() const;
 };
