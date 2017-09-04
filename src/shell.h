@@ -13,7 +13,6 @@ static WeightedDigraph graph;
 // Command I/O
 static std::string line;
 static std::string token;
-static bool exitShell;
 static std::stringstream tokenizer;
 
 static struct Command {
@@ -29,23 +28,34 @@ const std::string listCmd("list");
 const std::string loadCmd("load");
 const std::string quitCmd("quit");
 
+const std::string writeCmd("write");
+const std::string adjCmd("adj");
+const std::string matrixCmd("matrix");
+const std::string addCmd("add");
+const std::string removeCmd("remove");
+const std::string edgeCmd("edge");
+const std::string nedgeCmd("nedge");
+const std::string algoCmd("algo"); 
+
 // General Main Shell Messages
 const std::string welcomeMessage("QuickGraph - a simple graph creation software\nAuthor: Nikhil Kumar 2017\nType \"help\" to see all available commands.");
 const std::string invalidCmd("Please enter a valid command.\nType \"help\" to see all available commands.");
-const std::string helpMessage_main("Commands available:\nlist -- display graphs files on disk that can be loaded into main memory\nload <graph_file> -- load a graph stored on disk into main memory (extension MUST be .graph)\nnew <graph_name> -- enter a live graph creation shell in which graph structures can be created on the fly, and written to disk\nquit -- exit the graph shell");
+const std::string helpMessage_main("Commands available:\n\nlist -- display graphs files on disk that can be loaded into main memory\nload <graph_file> -- load a graph stored on disk into main memory (extension MUST be .graph)\nnew -- enter a live graph creation shell in which graph structures can be created on the fly, and written to disk\nquit -- exit the graph shell");
 
 // Load Graph Messages
 const std::string graphLoc("../graphFiles/");
 const std::string failLoad("Please re-type filename. Type \"list\" to see avaailable files on disk.");
 const std::string failLoad_n1("\nUnable to open ");
-const std::string failLoad_n2("\nFile does not contain .graph extension: ");
+const std::string failLoad_n2("\nFile does not contain \".graph\" extension: ");
 const std::string goodLoad("File has been loaded properly: ");
 
 // Live Graph Messages
-const std::string liveMessage("fill in later...");
+const std::string liveMessage("Live Graph Creation Environment\nType \"help\" to see all available commands.");
+const std::string emptyWrite("Graph contains no vertices. Unable to write empty file to disk.");
+const std::string helpMessage_live("Commands available:\n\nwrite <graph name> -- writes graph in main memory to the disk (\".graph\" extension required), and will overwrite any existing file with the same name\nadj -- displays graph as an adjacency list\nmatrix -- displays graph as an adjacency matrix\nadd <vertex 1>,<vertex 2>,... -- inserts named vertices into the graph\nremove <vertex 1>,<vertex 2>,... -- removes named vertices from the graph\nedge <vertex 1>,<vertex 2>,<weight> -- creates edge from vertex 1 to vertex 2 using weight specified (overwrites any existing edge from vertex 1 to vertex 2)\nnedge <vertex 1>,<vertex 2> -- removes edge from vertex 1 to vertex 2\nalgo -- enters graph algorithm interface\nquit -- go back to main shell");
 
 /////////////////////////////////////////////////////////////////////////////
-// MAIN FUNCTIONS                                                          //
+// AUXILIARY FUNCTIONS                                                     //
 /////////////////////////////////////////////////////////////////////////////
 
 /*
@@ -55,6 +65,10 @@ const std::string liveMessage("fill in later...");
  * @return buf, the cleared buffer, by reference
  */
 void clearBuffer(std::stringstream& buf);
+
+/////////////////////////////////////////////////////////////////////////////
+// MAIN FUNCTIONS                                                          //
+/////////////////////////////////////////////////////////////////////////////
 
 /*
  * Displays shell prompt.
@@ -97,44 +111,64 @@ void mainShell();
  *         Displays a help menu with instructions on how to use the live shell
  *         in the Graphs program.
  *
- *      ---> write
- *         Writes the graph created by the user to the disk. The name initially
- *         specified by the user cannot be changed. If file does not already
- *         exist, a new file will be created and saved. All Graph files are
- *         located in the "graph_files" directory with the extension ".graph".
+ *      ---> write <graph name>
+ *         Writes the graph created by the user to the disk. If file does not
+ *         already exist, a new file will be created and saved. All Graph files
+ *         are located in the "graphFiles" directory with the extension ".graph".
  *
- *      ---> stats
- *         Displays graph information to the user in the following form.
+ *      ---> adj 
+ *         Displays graph represented as an adjacency list in the following
+ *         form.
  *         
  *         <graph name>
- *         <vertex 1> | <neighbor 1> <neighbor 2> ...
- *         <vertex 2> | <neighbor 1> <neighbor 2> ...
+ *         <vertex 1> | <neighbor 1>[weight 1] <neighbor 2>[weight 2] ...
+ *         <vertex 2> | <neighbor 1>[weight 1] <neighbor 2>[weight 2] ...
  *         ...
+ *         <vertex n> | <neighbor 1>[weight 1] <neighbor 2>[weight 2] ...
  *
  *      ---> matrix
  *         Displays graph represented as an adjacency matrix in the following
- *         form.
+ *         form:
  *
  *         <graph name>
- *         <connection 1.1> <connection 1.2> ...
- *         <connection 2.1> ...
+ *         
+ *         <vertex 1>
+ *         <vertex 2>
  *         ...
+ *         <vertex n>
  *
- *      ---> add <vertex 1> <vertex 2> ...
- *         Inserts named vertices into the graph. Gives an error report if
- *         there was a problem with adding any vertices.
+ *         <vertex 1->1 weight> <vertex 1->2 weight> ...
+ *         <vertex 2->1 weight> <vertex 2->2 weight> ...
+ *         ...
+ *         <vertex n->1 weight> <vertex n->2 weight> ...
  *
- *      ---> remove <vertex 1> <vertex 2> ...
- *         Removes named vertices from the graph. Gives an error report if
- *         there was a problem with removing any vertices. 
+ * 		   Weights marked by NWT indicate no edge present between the
+ * 		   vertices. 
  *
- *      ---> edge <vertex 1> <vertex 2>
- *         Connects vertex 1 with vertex 2. Gives an error report if there was
- *         a problem with connecting the vertices.
+ *      ---> add <vertex 1>,<vertex 2>,<vertex 3> ...
+ *         Inserts named vertices into the graph. If the operation should fail
+ *         for any vertices, the vertices for which the operation succeeded
+ *         will still be added, and an error report will be given for those
+ *         that were not added.
  *
- *      ---> noedge <vertex 1> <vertex 2>
- *         Disconnects vertex 1 from vertex 2. Gives an error report if there
- *         was a problem with disconnecting the vertices.
+ *      ---> remove <vertex 1>,<vertex 2>,<vertex 3> ...
+ *         Removes named vertices from the graph. If the operation should fail
+ *         for any vertices, the vertices for which the operation succeeded
+ *         will still be removed, and an error report will be given for those
+ *         that were not removed.
+
+ *
+ *      ---> edge <vertex 1>,<vertex 2>,<weight>
+ *         Connects vertex 1 with vertex 2 with weight specified. All weights
+ *         are signed integers. If the operation should fail, the edge will
+ *         not be created, and a precise error report wil be given detailing
+ *         the reason.
+ *
+ *      ---> nedge <vertex 1>,<vertex 2>
+ *         Disconnects vertex 1 from vertex 2, thereby assigning a sentinel 
+ *         "null weight" value for the edge. If the operation should fail, the
+ *         edge will not be removed, and a precise error report will be given
+ *         detailing the reason.
  *
  *      ---> algo
  *         Enters the algorithm shell. Here, the user can perform certain
@@ -143,8 +177,9 @@ void mainShell();
  *         etc..).
  *
  *      ---> quit
- *         Exits the live shell environment. Does not save any changes made to
- *         the current graph after the most recent save. 
+ *         Exits the live shell environment, and brings user back to main
+ *         shell. Does not save any changes made to the current graph after
+ *         the most recent save. 
  */
 void liveShell();
 

@@ -16,6 +16,9 @@ typedef std::vector<std::vector<Weight>> Matrix;
 #define NWT SHRT_MIN       // weight in adjacency matrix corresponding to
                                 // lack of edge present between vertices
 
+const std::string graphExt(".graph"); 	// file extension for reading/writing
+                                            // graphs
+
 /////////////////////////////////////////////////////////////////////////////
 // AUXILIARY FUNCTION DEFINITIONS                                          //
 /////////////////////////////////////////////////////////////////////////////
@@ -221,7 +224,7 @@ class WeightedDigraph {
        
         /*
          * Clears current graph. Then loads a graph specified by the formatted
-         * file. File must hold the .graph extension. For example: test.graph
+         * file. Extension of file must be ".graph". For example: test.graph 
          * File must be in the following specialized format:
          *
          * <root_vertex1> | <adj_vertex1>,<weight1> <adj_vertex2>,<weight2> ...
@@ -232,21 +235,19 @@ class WeightedDigraph {
          *
          * @return 0 upon successful load
          *        -1 upon unsuccessful load due to inability to open file
-         *        -2 upon unsuccessful load due to incorrect file extension
-         *        and/or format
+		 *        -2 upon unsuccessful load due to improper extension
          */
          int fileLoad(const std::string& file);
       
         /*
          * Writes the current graph to the disk using the file name specified.
-         * Will overwrite a file with the same name with new contents. File
-         * must hold the .graph extension. For example: test.graph.
+         * Will overwrite a file with the same name with new contents.
          *
          * @param file, the name of the file to write to disk
          *
          * @return 0 upon successful write
          *        -1 upon unsuccessful write due to inability to open file
-         *        -2 upon unsuccessful write due to incorrect file extension 
+		 *        -2 upon unsuccessful write due to improper extension
          */ 
         int fileWrite(const std::string& file) const;
          

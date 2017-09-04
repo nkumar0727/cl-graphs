@@ -94,7 +94,10 @@ void AdjMatrix::getNeighbors(Offset s, std::vector<Offset>& n) const{
 void AdjMatrix::print() const{
     for(Offset i = 0; i < size; ++i) {
         for(Offset j = 0; j < size; ++j) {
-            std::cout << data[i][j] << " ";
+			if(data[i][j] == NWT)
+				std::cout << "NWT" << " ";
+			else
+            	std::cout << data[i][j] << " ";
         }
         std::cout << std::endl;
     }
@@ -129,8 +132,8 @@ void WeightedDigraph::clear() {
 }
 
 int WeightedDigraph::fileLoad(const std::string& file) {
-    if(file.find(".graph") != file.size() - 6)
-        return -2;
+    if(file.find(graphExt) != file.size() - 6)
+	   return -2;
     std::vector<Key> vertex;
     std::vector<Key> neighbor;
     std::string line;
@@ -154,8 +157,8 @@ int WeightedDigraph::fileLoad(const std::string& file) {
 }
 
 int WeightedDigraph::fileWrite(const std::string& file) const{
-   if(file.find(".graph") != file.size() - 6)
-      return -2;
+   if(file.find(graphExt) != file.size() - 6)
+	   return -2;
    std::ofstream outFile(file);
    if(outFile.is_open()) {
        std::vector<Offset> nbrs;
