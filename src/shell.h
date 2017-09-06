@@ -44,7 +44,7 @@ const std::string helpMessage_main("Commands available:\n\nlist -- display graph
 
 // Load Graph Messages
 const std::string graphLoc("../graphFiles/");
-const std::string failLoad("Please re-type filename. Type \"list\" to see avaailable files on disk.");
+const std::string failLoad("Please re-type filename. Type \"list\" to see available files on disk.");
 const std::string failLoad_n1("\nUnable to open ");
 const std::string failLoad_n2("\nFile does not contain \".graph\" extension: ");
 const std::string goodLoad("File has been loaded properly: ");
@@ -52,6 +52,10 @@ const std::string goodLoad("File has been loaded properly: ");
 // Live Graph Messages
 const std::string liveMessage("Live Graph Creation Environment\nType \"help\" to see all available commands.");
 const std::string emptyWrite("Graph contains no vertices. Unable to write empty file to disk.");
+const std::string goodWrite("File has been wrtten properly: ");
+const std::string failWrite("Please re-type filename.");
+const std::string failWrite_n1("\nUnable to open "):
+const std::string failWrite_n2("File does not contain \".graph\" extension: ");
 const std::string helpMessage_live("Commands available:\n\nwrite <graph name> -- writes graph in main memory to the disk (\".graph\" extension required), and will overwrite any existing file with the same name\nadj -- displays graph as an adjacency list\nmatrix -- displays graph as an adjacency matrix\nadd <vertex 1>,<vertex 2>,... -- inserts named vertices into the graph\nremove <vertex 1>,<vertex 2>,... -- removes named vertices from the graph\nedge <vertex 1>,<vertex 2>,<weight> -- creates edge from vertex 1 to vertex 2 using weight specified (overwrites any existing edge from vertex 1 to vertex 2)\nnedge <vertex 1>,<vertex 2> -- removes edge from vertex 1 to vertex 2\nalgo -- enters graph algorithm interface\nquit -- go back to main shell");
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,6 +69,16 @@ const std::string helpMessage_live("Commands available:\n\nwrite <graph name> --
  * @return buf, the cleared buffer, by reference
  */
 void clearBuffer(std::stringstream& buf);
+
+/*
+ * Tokenizes string by delimiter and places tokens into a vector.
+ *
+ * @param tokens, the tokenized strings returned by reference
+ * @param str, the string to tokenize
+ * @param delim, the delimiter for the tokenizing process
+ */
+void tokenizeString(std::vector<std::string>& tokens, std::string& str, 
+		char delim);
 
 /////////////////////////////////////////////////////////////////////////////
 // MAIN FUNCTIONS                                                          //

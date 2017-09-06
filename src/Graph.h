@@ -24,7 +24,7 @@ const std::string graphExt(".graph"); 	// file extension for reading/writing
 /////////////////////////////////////////////////////////////////////////////
 
 /*
- * Remove trailing and leading whitespace froms string.
+ * Remove trailing and leading whitespace from string.
  *
  * @param str, the string to trim
  * @return the trimmed string
@@ -344,11 +344,25 @@ class WeightedDigraph {
          * Prints out contents of graph to the console in the following
          * format:
          *
-         * Vertex <vertex1> connected to: <neighbor1> <neighbor2> ...
-         * Vertex <vertex2> connected to: <neighbor1> <neighbor2> ...
+         * <vertex1> | <neighbor1>[weight 1] <neighbor2>[weight 2] ...
+         * <vertex2> | <neighbor1>[weight 1] <neighbor2>[weight 2] ...
          * ...
          */
-        void print() const;
+        void printAdjList() const;
+
+		/*
+		 * Prints out the contents of graph to the console in the following
+		 * format:
+		 *
+		 * <vertex 1>
+		 * <vertex 2>
+		 * ...
+		 *
+		 * <weight 1->1> <weight 1->2> ...
+		 * <weight 2->1> <weight 2->2> ...
+		 * ...
+		 */
+		void printAdjMatrix() const;
 
         /*
          * TESTING PURPOSES ONLY

@@ -80,7 +80,7 @@ gtest : $(GTEST_MAIN)/gtest.a $(GTEST_MAIN)/gtest_main.a
 allTests : $(TESTS)
 
 # Build quick-graph shell
-shell : $(USER_DIR)/shell 
+shell : $(USER_DIR)/shell
 
 # Clean object files and shell and test executables.
 cleanSrc :

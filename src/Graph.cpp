@@ -232,17 +232,21 @@ bool WeightedDigraph::getNeighbors(const Key& k, std::vector<Key>& n) const{
     return true;
 }
 
-void WeightedDigraph::print() const{
+void WeightedDigraph::printAdjList() const{
     std::vector<Offset> nbrs;
     for(Offset i = 0; i < vertices.size(); ++i) {
         matrix.getNeighbors(i,nbrs);
-        std::cout << "Vertex " << vertices[i] << " connected to: ";
+        std::cout << vertices[i] << " | ";
         for(Offset j = 0; j < nbrs.size(); ++j) {
             std::cout << vertices[nbrs[j]] << "[" << matrix.getWeight(i,nbrs[j]) << "] ";
         }
         std::cout << std::endl;
         nbrs.clear();
     }
+}
+
+void WeightedDigraph::printAdjMatrix() const {
+	matrix.print();
 }
 
 void WeightedDigraph::loadEdges(std::vector<Key>& vertex, 
