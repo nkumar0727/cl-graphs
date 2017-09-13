@@ -12,6 +12,7 @@ void mainShell() {
     bool exitShell = false;
     std::cout << welcomeMessage << std::endl;
     while(!exitShell) {
+		std::cout << mainMessage << std::endl;
         std::cout << prompt;
         std::getline(std::cin, line);
         clearBuffer(tokenizer);
@@ -21,61 +22,66 @@ void mainShell() {
             if(tokenizer >> token) {
                 cmd.arg = token;
                 if(tokenizer >> token)
-                    std::cout << invalidCmd << std::endl;
+                    std::cout << invalidCmd << std::endl << std::endl;
                 else if(cmd.op == loadCmd){
-                    std::cout << "load " << cmd.arg << std::endl;
                     switch(graph.fileLoad(graphLoc + cmd.arg)) {
                         case -1:
                             std::cout << failLoad << failLoad_n1 << cmd.arg
-								<< std::endl;
+								<< std::endl << std::endl;;
                             break;
                         case -2:
                             std::cout << failLoad << failLoad_n2 << cmd.arg
-								<< std::endl;
+								<< std::endl << std::endl;
                             break;
                         case 0:
-                            std::cout << goodLoad << cmd.arg << std::endl;
-                            // liveShell();
+                            std::cout << goodLoad << cmd.arg << std::endl << std::endl;
+                            liveShell();
                     }
                 }
                 else
-                    std::cout << invalidCmd << std::endl;
-            } 
+                    std::cout << invalidCmd << std::endl << std::endl;
+            }
+			else if(cmd.op == clearCmd) {
+				std::system("clear");
+			}
 			else if(cmd.op == quitCmd)
                 exitShell = true;
             else if(cmd.op == helpCmd)
-                std::cout << helpMessage_main << std::endl;
-            else if(cmd.op == listCmd) 
+                std::cout << helpMessage_main << std::endl << std::endl;
+            else if(cmd.op == listCmd) {
+				std::cout << std::endl;
                 std::system("ls -h ../graphFiles");
+				std::cout << std::endl;
+			}
             else if(cmd.op == newCmd) {
-                std::cout << "new" << std::endl;
 				graph.clear();
-                //liveShell();
+                liveShell();
             }
             else
-            	std::cout << invalidCmd << std::endl;
+            	std::cout << invalidCmd << std::endl << std::endl;
         } 
 		else
-            std::cout << invalidCmd << std::endl;
+            std::cout << invalidCmd << std::endl << std::endl;
     }
 }
 
 void liveShell() {
 	bool exitShell = false;
-    std::cout << liveMessage << std::endl;
     while(!exitShell) {
+		std::cout << liveMessage << std::endl;
         std::cout << prompt;
         std::getline(std::cin, line);
-        cleanBuffer(tokenizer);
+        clearBuffer(tokenizer);
         tokenizer.str(line);
         if(tokenizer >> token) {
             cmd.op = token;
             if(tokenizer >> token) {
+				cmd.arg = token;
 				if(cmd.op == writeCmd) {
-					if(g.isEmpty())
+					if(graph.isEmpty())
 						std::cout << emptyWrite << std::endl;
 					else {
-						switch(g.writeFile(cmd.arg) {
+						switch(graph.fileWrite(graphLoc + cmd.arg)) {
 							case -1:
 								std::cout << failWrite << failWrite_n1 <<
 									cmd.arg << std::endl;							
@@ -91,10 +97,10 @@ void liveShell() {
 				}
 				else if(cmd.op == addCmd) {
 					std::vector<std::string> tokens;
-					std::getline(tokenizer, line);
+					line = line.substr(line.find_first_of(addCmd)+3);
 					tokenizeString(tokens, line, ',');
 					for(size_t i = 0; i < tokens.size(); ++i) {
-						if(!g.addVertex(tokens[i]))
+						if(!graph.addVertex(tokens[i]))
 							std::cout << "error" << std::endl;
 						else
 							std::cout << "Vertex " << tokens[i] <<
@@ -103,10 +109,10 @@ void liveShell() {
 				}
 				else if(cmd.op == removeCmd) {
 					std::vector<std::string> tokens;
-					std::getline(tokenizer, line);
+					line = line.substr(line.find_first_of(removeCmd)+6);
 					tokenizeString(tokens, line, ',');
 					for(size_t i = 0; i < tokens.size(); ++i) {
-						if(!g.removeVertex(tokens[i]))
+						if(!graph.removeVertex(tokens[i]))
 							std::cout << "error" << std::endl;
 						else
 							std::cout << "Vertex " << tokens[i] <<
@@ -115,12 +121,13 @@ void liveShell() {
 				}
 				else if(cmd.op == edgeCmd) {
 					std::vector<std::string> tokens;
-					std::getline(tokenier, line);
+					line = line.substr(line.find_first_of(removeCmd)+4);
 					tokenizeString(tokens, line, ',');
 					if(tokens.size() != 3)
 						std::cout << invalidCmd << std::endl;
 					else {
-						switch(g.setEdge(tokens[0],tokens[1],tokens[2])) {
+						Weight t = std::stoi(tokens[2]);
+						switch(graph.setEdge(tokens[0],tokens[1],t)) {
 							case -1:
 								std::cout << "non existant vertex" << std::endl;
 								break;
@@ -135,12 +142,12 @@ void liveShell() {
 				}
 				else if(cmd.op == nedgeCmd) {
 					std::vector<std::string> tokens;
-					std::getline(tokenier, line);
+					line = line.substr(line.find_first_of(removeCmd)+5);
 					tokenizeString(tokens, line, ',');
 					if(tokens.size() != 2)
 						std::cout << invalidCmd << std::endl;
 					else {
-						switch(g.removeEdge(tokens[0],tokens[1])) {
+						switch(graph.removeEdge(tokens[0],tokens[1])) {
 							case -1:
 								std::cout << "non existant vertex" << std::endl;
 								break;
@@ -152,13 +159,16 @@ void liveShell() {
 						}
 					}
 				}
-            } 
+            }
+			else if(cmd.op == clearCmd) {
+				std::system("clear");
+			}
 			else if(cmd.op == helpCmd)
-                std::cout << helpMessage_live << std::endl;
+                std::cout << helpMessage_live << std::endl << std::endl;
 			else if(cmd.op == adjCmd)
-				g.printAdjList();
+				graph.printAdjList();
 			else if(cmd.op == matrixCmd) 
-				g.printAdjMatrix();	
+				graph.printAdjMatrix();	
 			else if(cmd.op == algoCmd) {
 				std::cout << "Algos shell" << std::endl;
 				// algorithmShell();

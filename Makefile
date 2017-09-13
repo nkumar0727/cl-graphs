@@ -12,6 +12,9 @@
 # To build quick-graph unit tests
 # > make allTests
 #
+# To build quick-graph source object files and executables (post-testing) 
+# > make allSrc 
+#
 # To clean quick-graph source object files and executables
 # > make cleanSrc
 #
@@ -20,6 +23,7 @@
 #
 # To clean both source object files/execuables and Google C++ Test Build
 # > make clean
+#
 
 #################################################
 # General 
@@ -82,7 +86,7 @@ allTests : $(TESTS)
 # Build quick-graph shell
 shell : $(USER_DIR)/shell
 
-# Clean object files and shell and test executables.
+# Clean object files and shell and test executables
 cleanSrc :
 	rm -f $(TESTS) $(USER_DIR)/shell $(USER_OBJ)/*.o
 
@@ -120,6 +124,6 @@ $(USER_DIR)/graphTest : $(USER_OBJ)/Graph.o $(USER_OBJ)/graphTest.o $(GTEST_MAIN
 $(USER_DIR)/shell : $(USER_OBJ)/Graph.o $(USER_OBJ)/shell.o 
 	$(CXX) $^ -Wall -g -o $@
 
-$(USER_OBJ)/shell.o : $(USER_DIR)/shell.cpp $(USER_DIR)/shell.h
+$(USER_OBJ)/shell.o : $(USER_DIR)/shell.cpp $(USER_DIR)/shell.h $(USER_DIR)/Graph.h
 	$(CXX) $(CXXFLAGS) -c $(USER_DIR)/shell.cpp -o $@
 

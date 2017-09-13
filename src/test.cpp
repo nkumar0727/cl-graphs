@@ -23,14 +23,13 @@ void tokenizeString(std::vector<std::string>& tokens, std::string& str,
 	tokens.push_back(str.substr(start,str.size()-start));
 }
 
+
 int main() {
-	char delim = ',';
-	std::string line;
-	std::vector<std::string> tokens;
-	std::getline(std::cin, line);
-	tokenizeString(tokens, line, delim);
-	for(auto itr = tokens.begin(); itr != tokens.end(); ++itr) {
-		std::cout << *itr << std::endl;
-	}
-	return 0;
+  std::string cmd = "add v1,vertex 2, vertex number 4, v";
+  std::stringstream buffer(cmd);
+  std::string tok;
+  buffer >> tok;
+  std::cout << tok << std::endl;
+  std::getline(buffer, tok);
+  std::cout << tok << std::endl;
 }

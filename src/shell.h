@@ -26,6 +26,7 @@ const std::string helpCmd("help");
 const std::string newCmd("new");
 const std::string listCmd("list");
 const std::string loadCmd("load");
+const std::string clearCmd("clear");
 const std::string quitCmd("quit");
 
 const std::string writeCmd("write");
@@ -38,23 +39,24 @@ const std::string nedgeCmd("nedge");
 const std::string algoCmd("algo"); 
 
 // General Main Shell Messages
-const std::string welcomeMessage("QuickGraph - a simple graph creation software\nAuthor: Nikhil Kumar 2017\nType \"help\" to see all available commands.");
-const std::string invalidCmd("Please enter a valid command.\nType \"help\" to see all available commands.");
-const std::string helpMessage_main("Commands available:\n\nlist -- display graphs files on disk that can be loaded into main memory\nload <graph_file> -- load a graph stored on disk into main memory (extension MUST be .graph)\nnew -- enter a live graph creation shell in which graph structures can be created on the fly, and written to disk\nquit -- exit the graph shell");
+const std::string welcomeMessage("QuickGraph - a simple graph creation software\nAuthor: Nikhil Kumar 2017");
+const std::string invalidCmd("\nPlease enter a valid command.");
+const std::string helpMessage_main("\nCommands available:\n\nlist -- display graphs files on disk that can be loaded into main memory\nload <graph_file> -- load a graph stored on disk into main memory (extension MUST be .graph)\nnew -- enter a live graph creation shell in which graph structures can be created on the fly, and written to disk\nquit -- exit the graph shell");
+const std::string mainMessage("Main Menu\nType \"help\" to see all available commands.");
 
 // Load Graph Messages
 const std::string graphLoc("../graphFiles/");
-const std::string failLoad("Please re-type filename. Type \"list\" to see available files on disk.");
+const std::string failLoad("\nPlease re-type filename. Type \"list\" to see available files on disk.");
 const std::string failLoad_n1("\nUnable to open ");
 const std::string failLoad_n2("\nFile does not contain \".graph\" extension: ");
-const std::string goodLoad("File has been loaded properly: ");
+const std::string goodLoad("\nFile has been loaded properly: ");
 
 // Live Graph Messages
 const std::string liveMessage("Live Graph Creation Environment\nType \"help\" to see all available commands.");
 const std::string emptyWrite("Graph contains no vertices. Unable to write empty file to disk.");
 const std::string goodWrite("File has been wrtten properly: ");
 const std::string failWrite("Please re-type filename.");
-const std::string failWrite_n1("\nUnable to open "):
+const std::string failWrite_n1("\nUnable to open ");
 const std::string failWrite_n2("File does not contain \".graph\" extension: ");
 const std::string helpMessage_live("Commands available:\n\nwrite <graph name> -- writes graph in main memory to the disk (\".graph\" extension required), and will overwrite any existing file with the same name\nadj -- displays graph as an adjacency list\nmatrix -- displays graph as an adjacency matrix\nadd <vertex 1>,<vertex 2>,... -- inserts named vertices into the graph\nremove <vertex 1>,<vertex 2>,... -- removes named vertices from the graph\nedge <vertex 1>,<vertex 2>,<weight> -- creates edge from vertex 1 to vertex 2 using weight specified (overwrites any existing edge from vertex 1 to vertex 2)\nnedge <vertex 1>,<vertex 2> -- removes edge from vertex 1 to vertex 2\nalgo -- enters graph algorithm interface\nquit -- go back to main shell");
 
@@ -92,6 +94,9 @@ void tokenizeString(std::vector<std::string>& tokens, std::string& str,
  *         Displays a help menu with instructions on how to use the Graphs
  *         program.
  *
+ *		---> clear
+ *		   Clears the shell prompt from previous commands.
+ *
  *      ---> new
  *         Enters a live graph building environemnt where the user can
  *         manually add and remove vertices, connect vertices, retrieve
@@ -125,6 +130,9 @@ void mainShell();
  *         Displays a help menu with instructions on how to use the live shell
  *         in the Graphs program.
  *
+ *		---> clear
+ *		   Clears the shell prompt from previous commands.
+ *      
  *      ---> write <graph name>
  *         Writes the graph created by the user to the disk. If file does not
  *         already exist, a new file will be created and saved. All Graph files
