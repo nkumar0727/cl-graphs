@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
+#include <stdexcept>
 
 int main() {
     mainShell();
@@ -55,6 +56,7 @@ void mainShell() {
 			}
             else if(cmd.op == newCmd) {
 				graph.clear();
+				std::cout << std::endl;
                 liveShell();
             }
             else
@@ -101,11 +103,11 @@ void liveShell() {
 					tokenizeString(tokens, line, ',');
 					for(size_t i = 0; i < tokens.size(); ++i) {
 						if(!graph.addVertex(tokens[i]))
-							std::cout << "error" << std::endl;
+							std::cout << failAddVertex << tokens[i] << std::endl;
 						else
-							std::cout << "Vertex " << tokens[i] <<
-								" has been added." << std::endl;
+							std::cout << successVertexAdd << tokens[i] << std::endl;
 					}
+					std::cout << std::endl;
 				}
 				else if(cmd.op == removeCmd) {
 					std::vector<std::string> tokens;
@@ -113,11 +115,11 @@ void liveShell() {
 					tokenizeString(tokens, line, ',');
 					for(size_t i = 0; i < tokens.size(); ++i) {
 						if(!graph.removeVertex(tokens[i]))
-							std::cout << "error" << std::endl;
+							std::cout << failRemoveVertex << tokens[i] << std::endl;
 						else
-							std::cout << "Vertex " << tokens[i] <<
-								" has been removed." << std::endl;
+							std::cout << successVertexRemove << tokens[i] << std::endl;
 					}
+					std::cout << std::endl;
 				}
 				else if(cmd.op == edgeCmd) {
 					std::vector<std::string> tokens;
@@ -126,17 +128,23 @@ void liveShell() {
 					if(tokens.size() != 3)
 						std::cout << invalidCmd << std::endl;
 					else {
-						Weight t = std::stoi(tokens[2]);
-						switch(graph.setEdge(tokens[0],tokens[1],t)) {
-							case -1:
-								std::cout << "non existant vertex" << std::endl;
-								break;
-							case 1:
-								std::cout << "created, but overwritten" << 
-									std::endl;
-								break;
-							case 0:
-								std::cout << "yay, edge created" << std::endl;
+						try {
+						  Weight t = std::stoi(tokens[2]);
+						  switch(graph.setEdge(tokens[0],tokens[1],t)) {
+							  case -1:
+								  std::cout << failVertexExist << tokens[0] << 
+									", or " << tokens[1] << std::endl << std::endl;
+								  break;
+							  case 1:
+								  std::cout << overwriteEdge << tokens[0] << ", "
+									<< tokens[1] << "[" << t << "]" << std::endl << std::endl;
+								  break;
+							  case 0:
+								  std::cout << successEdge << tokens[0] << ", " 
+									<< tokens[1] << "[" << t << "]" << std::endl << std::endl;
+						  }
+						} catch(std::exception) {
+							std::cout << invalidCmd << std::endl << std::endl;
 						}
 					}
 				}
@@ -149,35 +157,48 @@ void liveShell() {
 					else {
 						switch(graph.removeEdge(tokens[0],tokens[1])) {
 							case -1:
-								std::cout << "non existant vertex" << std::endl;
+								std::cout << failVertexExist << tokens[0] <<
+								  ", or " << tokens[1] << std::endl << std::endl;
 								break;
 							case -2:
-								std::cout << "non existant edge" << std::endl;
+								std::cout << failEdgeExist << tokens[0] << ", "
+								  << tokens[1] << std::endl << std::endl;
 								break;
 							case 0:
-								std::cout << "yay, edge removed" << std::endl;
+								std::cout << successRemove << tokens[0] << ", "
+								  << tokens[1] << std::endl << std::endl;
 						}
 					}
 				}
+				else
+				  std::cout << invalidCmd << std::endl << std::endl;
             }
 			else if(cmd.op == clearCmd) {
 				std::system("clear");
 			}
 			else if(cmd.op == helpCmd)
                 std::cout << helpMessage_live << std::endl << std::endl;
-			else if(cmd.op == adjCmd)
+			else if(cmd.op == adjCmd) {
 				graph.printAdjList();
-			else if(cmd.op == matrixCmd) 
+				std::cout << std::endl;
+			}
+			else if(cmd.op == matrixCmd) {
 				graph.printAdjMatrix();	
+				std::cout << std::endl;
+			}
 			else if(cmd.op == algoCmd) {
 				std::cout << "Algos shell" << std::endl;
 				// algorithmShell();
 			}
-			else if(cmd.op == quitCmd)
+			else if(cmd.op == quitCmd) {
+				std::cout << std::endl;
 				exitShell = true;
+			}
+			else
+			  std::cout << invalidCmd << std::endl << std::endl;
         }
 		else
-            std::cout << invalidCmd << std::endl;
+            std::cout << invalidCmd << std::endl << std::endl;
     } 
 }
 

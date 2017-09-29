@@ -59,6 +59,15 @@ const std::string failWrite("Please re-type filename.");
 const std::string failWrite_n1("\nUnable to open ");
 const std::string failWrite_n2("File does not contain \".graph\" extension: ");
 const std::string helpMessage_live("Commands available:\n\nwrite <graph name> -- writes graph in main memory to the disk (\".graph\" extension required), and will overwrite any existing file with the same name\nadj -- displays graph as an adjacency list\nmatrix -- displays graph as an adjacency matrix\nadd <vertex 1>,<vertex 2>,... -- inserts named vertices into the graph\nremove <vertex 1>,<vertex 2>,... -- removes named vertices from the graph\nedge <vertex 1>,<vertex 2>,<weight> -- creates edge from vertex 1 to vertex 2 using weight specified (overwrites any existing edge from vertex 1 to vertex 2)\nnedge <vertex 1>,<vertex 2> -- removes edge from vertex 1 to vertex 2\nalgo -- enters graph algorithm interface\nquit -- go back to main shell");
+const std::string failAddVertex("Vertex could not be added: ");
+const std::string failRemoveVertex("Vertex could not be removed: ");
+const std::string failVertexExist("A vertex does not exist: ");
+const std::string overwriteEdge("(Overwrote existing edge) Edge created: ");
+const std::string successEdge("Edge created: ");
+const std::string failEdgeExist("An edge between the following could not be found: ");
+const std::string successRemove("Edge removed: ");
+const std::string successVertexAdd("Vertex was added: ");
+const std::string successVertexRemove("Vertex was removed: ");
 
 /////////////////////////////////////////////////////////////////////////////
 // AUXILIARY FUNCTIONS                                                     //
@@ -205,4 +214,18 @@ void mainShell();
  */
 void liveShell();
 
+/*		--->
+ *
+ *
+ *		---> clear
+ *		   Clears the shell prompt from previous commands.
+ *
+ *		---> help
+ *         Displays a help menu with instructions on how to use the live shell
+ *         in the Graphs program.
+ *
+ *		---> quit
+ *		   Exits the algorithm shell environment, and brings user back to live
+ *		   shell.
+ */
 void algorithmShell();
