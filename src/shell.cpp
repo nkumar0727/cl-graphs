@@ -5,8 +5,11 @@
 #include <stdexcept>
 
 int main() {
-    mainShell();
-    return 0;
+	WeightedDigraph graph;
+	std::stringstream tokenizer;
+	std::string token;
+  mainShell();
+  return 0;
 }
 
 void mainShell() {
@@ -125,7 +128,7 @@ void liveShell() {
 						line = line.substr(line.find_first_of(removeCmd)+4);
 						tokenizeString(tokens, line, ',');
 						if(tokens.size() != 3)
-							std::cout << invalidCmd << std::endl;
+							std::cout << invalidCmd << std::endl << std::endl;
 						else {
 							try {
 						  	Weight t = std::stoi(tokens[2]);
@@ -143,8 +146,9 @@ void liveShell() {
 										<< tokens[1] << "[" << t << "]" << std::endl << std::endl;
 						  	}
 							} 
-							catch(std::exception)
+							catch(std::exception) {
 								std::cout << invalidCmd << std::endl << std::endl;
+							}
 						}
 					}
 					else if(cmd.op == nedgeCmd) {
@@ -152,7 +156,7 @@ void liveShell() {
 						line = line.substr(line.find_first_of(removeCmd)+5);
 						tokenizeString(tokens, line, ',');
 						if(tokens.size() != 2)
-							std::cout << invalidCmd << std::endl;
+							std::cout << invalidCmd << std::endl << std::endl;
 						else {
 							switch(graph.removeEdge(tokens[0],tokens[1])) {
 								case -1:

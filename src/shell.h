@@ -8,13 +8,6 @@
 // SHELL STRUCTURES AND VARIABLES                                          //
 /////////////////////////////////////////////////////////////////////////////
 
-static WeightedDigraph graph;
-
-// Command I/O
-static std::string line;
-static std::string token;
-static std::stringstream tokenizer;
-
 static struct Command {
     std::string op;
     std::string arg;
@@ -214,15 +207,61 @@ void mainShell();
  */
 void liveShell();
 
-/*		--->
+/* THE FOLLOWING IS A LIST OF UNINFORMED SEARCHING PROCEDRUES
  *
+ * 			 Paths are printed in the form:
+ *
+ *       Path found from <vertex 1> to <vertex 2>.
+ * 			 Path Cost: <cost>
+ *			 <vertex 1> [Weight]---> <vertex a> -->[Weight] ... <vertex 2>
+ *
+ *			 If no such path exists, the following is printed out:
+ *
+ *       Could not find path from <vertex 1> to <vertex 2>.
+ *
+ *    ---> bfs <vertex 1>,<vertex 2> 
+ *			 Finds a path from vertex 1 to vertex 2 using a breadth-first
+ *			 searching implementation with prefix path cycle prevention. Neighbors
+ *			 are examined on a FIFO basis based on some innate ordering; therefore,
+ *			 weights will not play a role in selecting the path. The outcome can
+ *			 be thought of as, the path with the least number of "hops" from
+ *			 vertex 1 to vertex 2.
+ *
+ *    ---> ucs <vertex 1>,<vertex 2>
+ *    	 Finds a path from vertex 1 to vertex 2 using a uniform-cost searching
+ *    	 implementation with prefix path cycle prevention. Neighbors are
+ *    	 examined on a BIFO basis based on the lowest path cost from source to
+ *    	 neighbor; therefore, the weights WILL play a role in selecting the
+ *    	 path. Any paths going from <vertex 1> to <vertex 2> with a suboptimal
+ *    	 cost will not be dropped in favor of the optimal path. The outcome
+ *    	 can be thought of as, the path with the lowest "cost" from vertex 1
+ *    	 to vertex 2.
+ *
+ *    ---> dfs <vertex 1>,<vertex 1>,<depth-limit>
+ *       Finds a path from vertex 1 to vertex 2 using a depth-limited
+ *       depth-first searching implementation with prefix path cycle
+ *       prevention. Neighbors are examined on a LIFO basis based on some
+ *       innate ordering; therefore, weights will not play a role in selecting
+ *       the path. The <depth-limit> denotes the most number of "hops" the
+ *       search is willing to take to find its path. This search does not
+ *       guarantee and sort of optimality. 
+ *
+ *    ---> iddfs <vertex 1>,<vertex 2>
+ *       Finds a path from vertex 1 to vertex 2 using an depth-first searching
+ *       implementation with iterative deepening and prefix path cycle
+ *       prevention. Neighbors are examined on a LIFO basis based on some
+ *       innate ordering; therefore, weights will not play a role in selecting
+ *       the path. This search does guarantee optimality. THe solution can be
+ *       thought of the path with the least "hops" from vertex 1 to vertex 2.
+ *
+ * THE FOLLOWING IS A LIST OF BASIC SHELL COMMANDS
  *
  *		---> clear
  *		   Clears the shell prompt from previous commands.
  *
  *		---> help
- *         Displays a help menu with instructions on how to use the live shell
- *         in the Graphs program.
+ *       Displays a help menu with instructions on how to use the live shell
+ *       in the Graphs program.
  *
  *		---> quit
  *		   Exits the algorithm shell environment, and brings user back to live
