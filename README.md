@@ -1,4 +1,4 @@
-# CL-Graphs
+# my-graph-cli
 
 A quick and easy console application responsible for constructing and
 modifying graphs on-the-fly in main memory, as well as performing commonplace
